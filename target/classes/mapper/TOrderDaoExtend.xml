@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqupt.goods_ssm.dao.TOrderDAOExtend" >
+	
+	<resultMap type="com.cqupt.goods_ssm.domain.extend.TOrderExtend" id="findOrderByOidResultMap">
+		<id column="oid" property="oid" jdbcType="CHAR" />
+	    <result column="ordertime" property="ordertime" jdbcType="CHAR" />
+	    <result column="total" property="total" jdbcType="DECIMAL" />
+	    <result column="status" property="status" jdbcType="INTEGER" />
+	    <result column="address" property="address" jdbcType="VARCHAR" />
+	    <result column="uid" property="uid" jdbcType="CHAR" />
+	    <collection property="listOrderItem" ofType="com.cqupt.goods_ssm.domain.extend.TOrderitemExtend">
+	    	<id column="orderItemId" property="orderitemid" jdbcType="CHAR" />
+		    <result column="quantity" property="quantity" jdbcType="INTEGER" />
+		    <result column="subtotal" property="subtotal" jdbcType="DECIMAL" />
+		    <result column="bid" property="bid" jdbcType="CHAR" />
+		    <result column="bname" property="bname" jdbcType="VARCHAR" />
+		    <result column="currPrice" property="currprice" jdbcType="DECIMAL" />
+		    <result column="image_b" property="imageB" jdbcType="VARCHAR" />
+		    <result column="oid" property="oid" jdbcType="CHAR" />
+		    <association property="book" javaType="com.cqupt.goods_ssm.domain.extend.TBookExtend">
+		    	<id column="bid" property="bid" jdbcType="CHAR" />
+			    <result column="bname" property="bname" jdbcType="VARCHAR" />
+			    <result column="author" property="author" jdbcType="VARCHAR" />
+			    <result column="price" property="price" jdbcType="DECIMAL" />
+			    <result column="currPrice" property="currprice" jdbcType="DECIMAL" />
+			    <result column="discount" property="discount" jdbcType="DECIMAL" />
+			    <result column="press" property="press" jdbcType="VARCHAR" />
+			    <result column="publishtime" property="publishtime" jdbcType="CHAR" />
+			    <result column="edition" property="edition" jdbcType="INTEGER" />
+			    <result column="pageNum" property="pagenum" jdbcType="INTEGER" />
+			    <result column="wordNum" property="wordnum" jdbcType="INTEGER" />
+			    <result column="printtime" property="printtime" jdbcType="CHAR" />
+			    <result column="booksize" property="booksize" jdbcType="INTEGER" />
+			    <result column="paper" property="paper" jdbcType="VARCHAR" />
+			    <result column="cid" property="cid" jdbcType="CHAR" />
+			    <result column="image_w" property="imageW" jdbcType="VARCHAR" />
+			    <result column="image_b" property="imageB" jdbcType="VARCHAR" />
+			    <result column="orderBy" property="orderby" jdbcType="INTEGER" />
+		    </association>
+	    </collection>
+	</resultMap>
+	
+	
+	
+	<!-- 我的订单 findOrderByUid -->
+	<select id="findOrderByUid"
+	resultType="com.cqupt.goods_ssm.domain.extend.TOrderExtend">
+	 select * from t_order
+	 <where>
+	 	t_order.uid = #{uid}
+	 	order by ordertime desc 
+	 	limit #{begin},#{end}
+	 </where>
+	</select>
+	<select id="findOrderCountByUid" parameterType="java.lang.String"
+	resultType="java.lang.Integer">
+		select count(*) from t_order 
+		<where>
+			uid=#{uid}
+		</where>
+	</select>
+	
+	
+	<!-- 创建新的order -->
+	 <insert id="addOrder" parameterType="com.cqupt.goods_ssm.domain.extend.TOrderExtend" >
+	    insert into t_order (oid, ordertime, total, status, address, uid)
+	    values (#{oid}, #{ordertime}, #{total}, #{status}, #{address}, #{uid})
+  	</insert>
+  	
+  	<!-- 根据oid 查询Order -->
+  	<select id="findOrderByOid" parameterType="java.lang.String"
+  		resultMap="findOrderByOidResultMap">
+  		select * from t_order,t_orderitem,t_book
+  		where t_order.oid = #{oid}
+  			and t_order.oid = t_orderitem.oid
+  			and t_book.bid = t_orderitem.bid
+  	</select>
+  	
+  	<!--更改order状态  -->
+  	<update id="updateOrderStatus" parameterType="map">
+  		update t_order 
+  		set status = #{status} 
+  		where oid = #{oid}
+  	</update>
+  	
+  	<!-- 后台操作  -->
+  	<select id="findAllOrderCount" resultType="java.lang.Integer">
+		select count(*) from t_order
+	</select>
+	
+	<select id="findAllOrder" resultType="com.cqupt.goods_ssm.domain.extend.TOrderExtend">
+		select * from t_order
+	</select>
+	
+	<select id="findStatus" parameterType="java.lang.String"
+	resultType="java.lang.Integer">
+		select status from t_order where oid=#{oid}
+	</select>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqupt.goods_ssm.dao.TUserDAOExtend" >
+  <!-- 登录时，根据姓名和密码查找用户 -->
+  <select id="findUserByNameAndPassword" resultType="com.cqupt.goods_ssm.domain.extend.TUserExtend" parameterType="com.cqupt.goods_ssm.domain.vo.TUserExtendVo" >
+    select * from t_user
+    <where>
+    	loginname = #{userExtend.loginname} and loginpass = #{userExtend.loginpass}	
+    </where>
+  </select>
+   <!-- 注册时，用于插入用户 -->
+  <insert id="add" parameterType="com.cqupt.goods_ssm.domain.extend.TUserExtend">
+  	<!--insert into t_user value(?,?,?,?,?,?)  --> 
+  	
+  	insert into t_user value(#{uid},#{loginname},#{loginpass},#{email},#{status},#{activationcode})
+  
+  </insert>  
+  <!-- 用户激活时，通过激活码查找user -->
+  <select id="queryUserByCode" parameterType="java.lang.String"
+  	resultType="com.cqupt.goods_ssm.domain.extend.TUserExtend">
+  	select * from t_user where activationCode=#{code}
+  </select>
+  <!-- 用户激活时，修改用户状态 -->
+  <!-- parameterType="map" -->
+  <update id="updateUserStatus">
+  	update t_user set status=#{status} where uid=#{uid}
+  </update>
+  
+  <!-- 修改密码时，根据id和pass查找用户,查询原密码是否正确 -->
+  <select id="findByUidAndPass" resultType="java.lang.Integer">
+  	select count(*) from t_user where uid=#{uid} and loginpass=#{loginpass}
+  </select>
+  <!-- 修改密码时，修改密码为新密码 -->
+  <update id="updatePassword">
+  	update t_user set loginpass=#{newloginpass} where uid=#{uid}
+  </update>
+</mapper>

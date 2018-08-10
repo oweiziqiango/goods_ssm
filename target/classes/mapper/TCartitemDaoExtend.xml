@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqupt.goods_ssm.dao.TCartitemDAOExtend" >
+  <resultMap type="com.cqupt.goods_ssm.domain.extend.TCartitemExtend" id="findByUserMap">
+  	<id column="cartItemId" property="cartitemid"/>
+  	<result column="quantity" property="quantity"/>
+  	<association property="book" javaType="com.cqupt.goods_ssm.domain.extend.TBookExtend">
+  		<id column="bid" property="bid" jdbcType="CHAR" />
+	    <result column="bname" property="bname" jdbcType="VARCHAR" />
+	    <result column="author" property="author" jdbcType="VARCHAR" />
+	    <result column="price" property="price" jdbcType="DECIMAL" />
+	    <result column="currPrice" property="currprice" jdbcType="DECIMAL" />
+	    <result column="discount" property="discount" jdbcType="DECIMAL" />
+	    <result column="press" property="press" jdbcType="VARCHAR" />
+	    <result column="publishtime" property="publishtime" jdbcType="CHAR" />
+	    <result column="edition" property="edition" jdbcType="INTEGER" />
+	    <result column="pageNum" property="pagenum" jdbcType="INTEGER" />
+	    <result column="wordNum" property="wordnum" jdbcType="INTEGER" />
+	    <result column="printtime" property="printtime" jdbcType="CHAR" />
+	    <result column="booksize" property="booksize" jdbcType="INTEGER" />
+	    <result column="paper" property="paper" jdbcType="VARCHAR" />
+	    <result column="cid" property="cid" jdbcType="CHAR" />
+	    <result column="image_w" property="imageW" jdbcType="VARCHAR" />
+	    <result column="image_b" property="imageB" jdbcType="VARCHAR" />
+	    <result column="orderBy" property="orderby" jdbcType="INTEGER" />
+  	</association>
+  	<!-- <association property="user" javaType="com.cqupt.goods_ssm.domain.extend.TUserExtend">
+		<id column="uid" property="uid" jdbcType="CHAR" />
+	    <result column="loginname" property="loginname" jdbcType="VARCHAR" />
+	    <result column="loginpass" property="loginpass" jdbcType="VARCHAR" />
+	    <result column="email" property="email" jdbcType="VARCHAR" />
+	    <result column="status" property="status" jdbcType="BIT" />
+	    <result column="activationCode" property="activationcode" jdbcType="CHAR" />
+  	</association> -->
+  </resultMap>
+  
+  <!-- 根据uid 查询该用户的 购物车 -->
+  <select id="findByUser" parameterType="java.lang.String"
+  resultMap="findByUserMap">
+  	select * from t_cartitem c,t_book b 
+  	where c.bid=b.bid and uid=#{uid} 
+  	order by c.orderBy
+  </select>
+  <!--添加到购物车之前 查询是否已经在购物车中存在  -->
+  <select id="findByUidandBid" parameterType="com.cqupt.goods_ssm.domain.extend.TCartitemExtend"
+  resultType="com.cqupt.goods_ssm.domain.extend.TCartitemExtend">
+  	select * from t_cartitem where uid = #{uid} and bid =#{bid}
+  </select>
+  <!-- 新的条目添加到购物车 -->
+  <insert id="addCartItem" parameterType="com.cqupt.goods_ssm.domain.extend.TCartitemExtend">
+  	insert into t_cartitem (cartItemId,quantity,bid,uid) values(#{cartitemid},#{quantity},#{bid},#{uid})
+  </insert>
+  <!-- 修改购物车条目中图书的数量 -->
+  <update id="updateQuantity" parameterType="com.cqupt.goods_ssm.domain.extend.TCartitemExtend">
+  	update t_cartitem set quantity=#{quantity} where cartItemId=#{cartitemid}
+  </update>
+  <!-- 批量删除 -->
+  <delete id="batchDelete">
+  	delete from t_cartitem 
+  	<where>
+  		cartItemId in
+  		<!--记住sql语句 in -->
+  		<foreach collection="array" item="cartItemId" index="index" open="(" separator="," close=")">
+  			#{cartItemId}
+  		</foreach>
+  	</where>
+  </delete>
+  
+  <!-- 根据cartitemid 查找cartitem -->
+  <select id="findByCartItemId" parameterType="java.lang.String"
+  resultMap="findByUserMap">
+  	select * from t_cartitem c,t_book b where c.bid=b.bid and c.cartitemid=#{cartitemid}
+  </select>
+  
+  <select id="loadCartItems" resultMap="findByUserMap">
+  	select * from t_cartitem c,t_book b
+  	<where>
+  		c.bid=b.bid and
+  		cartItemId in
+  		<!--记住sql语句 in -->
+  		<foreach collection="array" item="cartItemId" index="index" open="(" separator="," close=")">
+  			#{cartItemId}
+  		</foreach>
+  	</where>
+  </select>
+</mapper>

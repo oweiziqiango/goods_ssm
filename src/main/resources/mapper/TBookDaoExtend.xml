@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqupt.goods_ssm.dao.TBookDAOExtend" >
+	
+	<resultMap type="com.cqupt.goods_ssm.domain.extend.TBookExtend" id="loadResultMap">
+		<id column="bid" property="bid" jdbcType="CHAR" />
+	    <result column="bname" property="bname" jdbcType="VARCHAR" />
+	    <result column="author" property="author" jdbcType="VARCHAR" />
+	    <result column="price" property="price" jdbcType="DECIMAL" />
+	    <result column="currPrice" property="currprice" jdbcType="DECIMAL" />
+	    <result column="discount" property="discount" jdbcType="DECIMAL" />
+	    <result column="press" property="press" jdbcType="VARCHAR" />
+	    <result column="publishtime" property="publishtime" jdbcType="CHAR" />
+	    <result column="edition" property="edition" jdbcType="INTEGER" />
+	    <result column="pageNum" property="pagenum" jdbcType="INTEGER" />
+	    <result column="wordNum" property="wordnum" jdbcType="INTEGER" />
+	    <result column="printtime" property="printtime" jdbcType="CHAR" />
+	    <result column="booksize" property="booksize" jdbcType="INTEGER" />
+	    <result column="paper" property="paper" jdbcType="VARCHAR" />
+	    <result column="cid" property="cid" jdbcType="CHAR" />
+	    <result column="image_w" property="imageW" jdbcType="VARCHAR" />
+	    <result column="image_b" property="imageB" jdbcType="VARCHAR" />
+	    <result column="orderBy" property="orderby" jdbcType="INTEGER" />
+		<association property="category" javaType="com.cqupt.goods_ssm.domain.extend.TCategoryExtend">
+			<id column="cid" property="cid" jdbcType="CHAR" />
+		    <result column="cname" property="cname" jdbcType="VARCHAR" />
+		    <result column="pid" property="pid" jdbcType="CHAR" />
+		    <result column="desc" property="desc" jdbcType="VARCHAR" />
+		    <result column="orderBy" property="orderby" jdbcType="INTEGER" />
+		</association>
+	</resultMap>
+	
+	<sql id="combinationLikeSql">
+		<!-- 2018.7.29 引入sql片段时，查看对应传入的参数是否书写准确 否则无法找到对应的值 -->
+		<if test="bookExtend.bname!=null and bookExtend.bname!=''">
+			and bname LIKE '%${bookExtend.bname }%'
+		</if>
+		<if test="bookExtend.author!=null and bookExtend.author!=''">
+			and author LIKE '%${bookExtend.author }%'
+		</if>
+		<if test="bookExtend.press!=null and bookExtend.press!=''">
+			and press LIKE '%${bookExtend.press }%'
+		</if>
+	
+	</sql>
+	
+	<sql id="bnameFindCount">
+		and bname LIKE '%${bname }%'
+	</sql>
+	
+	<sql id="pressFindCount">
+	<!-- 2018.7.29 like语句 中参数 不用?占位符 传入的是字符串  使用 ${} -->
+		and press LIKE '%${press }%'
+	</sql>
+	
+	<sql id="authorFindCount">
+		and author LIKE '%${author }%'
+	</sql>
+	
+	<sql id="limit">
+		 order by orderBy limit #{begin},#{end}
+	</sql>
+	
+	<!-- 根据cid查询对应页的图书  使用map传入值 -->
+	<select id="findByCategory" resultType="com.cqupt.goods_ssm.domain.extend.TBookExtend">
+		select * from t_book where cid = #{cid} order by orderBy limit #{begin},#{end}
+	</select>
+	<!-- 根据cid查询对应页的图书时，获取总的图书数 -->
+	<select id="findCountByCid" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from t_book where cid = #{cid}
+	</select>
+	
+	
+	<!-- 根据press查询对应页的图书  使用map传入值 -->
+	<select id="findByPress" parameterType="java.util.HashMap"
+	resultType="com.cqupt.goods_ssm.domain.extend.TBookExtend">
+		select * from t_book 
+		<where>
+			<include refid="pressFindCount"></include>
+			<include refid="limit"></include>
+		</where>
+	</select>
+	<!-- 根据press查询对应页的图书时，获取总的图书数 -->
+	<select id="findCountByPress" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from t_book 
+		<where>
+			<include refid="pressFindCount"></include>
+		</where>
+	</select>
+	
+	
+	<!-- 根据author查询对应页的图书  使用map传入值 -->
+	<select id="findByAuthor" resultType="com.cqupt.goods_ssm.domain.extend.TBookExtend">
+		select * from t_book 
+		<where>
+			<include refid="authorFindCount"></include>
+			<include refid="limit"></include>
+		</where>
+ 
+	</select>
+	<!-- 根据author查询对应页的图书时，获取总的图书数 -->
+	<select id="findCountByAuthor" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from t_book
+		<where>
+			<include refid="authorFindCount"></include>
+		</where>
+	</select>
+	
+	
+	
+	<!-- 根据cname查询对应页的图书  使用map传入值 -->
+	<select id="findByBname" resultType="com.cqupt.goods_ssm.domain.extend.TBookExtend">
+		select * from t_book 
+		<where>
+			<include refid="bnameFindCount"></include>
+			<include refid="limit"></include>
+		</where>
+	</select>
+	<!-- 根据cname查询对应页的图书时，获取总的图书数 -->
+	<select id="findCountByBname" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from t_book 
+		<where>
+			<include refid="bnameFindCount"></include>
+		</where>
+	</select>
+	
+	<!-- findByCombination 综合查询  使用动态sql -->
+	<select id="findByCombination" parameterType="com.cqupt.goods_ssm.domain.vo.TBookExtendVo"
+	resultType="com.cqupt.goods_ssm.domain.extend.TBookExtend">
+		select * from t_book
+		<where>
+			<include refid="combinationLikeSql"></include>
+			<include refid="limit"></include>
+		</where>
+	</select>
+	<select id="findCountByCombination" parameterType="com.cqupt.goods_ssm.domain.vo.TBookExtendVo"
+	resultType="java.lang.Integer">
+		select count(*) from t_book 
+		<where>
+			<include refid="combinationLikeSql"></include>
+		</where>
+	</select>
+	
+	<!-- <select id="findBookCountByCid" parameterType="java.lang.String"
+	resultType="java.lang.Integer">
+		select count(*) from t_book where cid=#{cid}
+	</select> -->
+	
+	<select id="load" parameterType="java.lang.String"
+	resultMap="loadResultMap">
+		select * from t_book,t_category
+		where t_book.bid = #{bid}
+		and t_book.cid = t_category.cid
+	</select>
+	<delete id="delete" parameterType="java.lang.String">
+		delete from t_book where bid = #{bid}		
+	</delete>
+	<!-- ,price=#{price,jdbcType=DECIMAL},currPrice=#{currprice,jdbcType=DECIMAL},
+			discount=#{discount,jdbcType=DECIMAL}, -->
+	<update id="edit" parameterType="com.cqupt.goods_ssm.domain.extend.TBookExtend">
+		update t_book
+	    set bname = #{bname,jdbcType=VARCHAR},
+	      author = #{author,jdbcType=VARCHAR},
+	      price = #{price,jdbcType=DECIMAL},
+	      currPrice = #{currprice,jdbcType=DECIMAL},
+	      discount = #{discount,jdbcType=DECIMAL},
+	      press = #{press,jdbcType=VARCHAR},
+	      publishtime = #{publishtime,jdbcType=CHAR},
+	      edition = #{edition,jdbcType=INTEGER},
+	      pageNum = #{pagenum,jdbcType=INTEGER},
+	      wordNum = #{wordnum,jdbcType=INTEGER},
+	      printtime = #{printtime,jdbcType=CHAR},
+	      booksize = #{booksize,jdbcType=INTEGER},
+	      paper = #{paper,jdbcType=VARCHAR},
+	      cid = #{cid,jdbcType=CHAR}
+   		 where bid = #{bid,jdbcType=CHAR}
+	</update>
+	<insert id="add" parameterType="com.cqupt.goods_ssm.domain.extend.TBookExtend">
+		insert into t_book (bid, bname, author, 
+     					 price, currPrice, discount, 
+    					 press, publishtime, edition, 
+     					 pageNum, wordNum, printtime, 
+     					 booksize, paper, cid, 
+     					 image_w, image_b, orderBy
+    					  )
+	    values (#{bid,jdbcType=CHAR}, #{bname,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, 
+		      #{price,jdbcType=DECIMAL}, #{currprice,jdbcType=DECIMAL}, #{discount,jdbcType=DECIMAL}, 
+		      #{press,jdbcType=VARCHAR}, #{publishtime,jdbcType=CHAR}, #{edition,jdbcType=INTEGER}, 
+		      #{pagenum,jdbcType=INTEGER}, #{wordnum,jdbcType=INTEGER}, #{printtime,jdbcType=CHAR}, 
+		      #{booksize,jdbcType=INTEGER}, #{paper,jdbcType=VARCHAR}, #{cid,jdbcType=CHAR}, 
+		      #{imageW,jdbcType=VARCHAR}, #{imageB,jdbcType=VARCHAR}, #{orderby,jdbcType=INTEGER}
+		      )
+	</insert>
+</mapper>

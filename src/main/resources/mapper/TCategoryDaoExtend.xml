@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqupt.goods_ssm.dao.TCategoryDAOExtend" >
+ 	
+ 	
+ 	<!-- 分类展示时，查找所有一级分类 -->
+ 	<!-- 2018.7.27 一定要注意resultMap 和 reusltType 不要写错了 会 导致找不到reuslt map -->
+ 	<select id="findAllParent" resultType="com.cqupt.goods_ssm.domain.extend.TCategoryExtend">
+ 		select * from t_category where pid is null order by orderBy
+ 	</select>
+ 	<!-- 分类展示时，根据一级分类 查询所属二级分类 -->
+ 	<select id="findByPid" parameterType="java.lang.String" resultType="com.cqupt.goods_ssm.domain.extend.TCategoryExtend">
+ 		select * from t_category where pid=#{cid} order by orderBy
+ 	</select>
+ 	
+ 	<!-- 后台 添加分类 -->
+ 	<insert id="add" parameterType="com.cqupt.goods_ssm.domain.extend.TCategoryExtend">
+ 		<!-- desc 是mysql的关键字  如果表的字段与其同名  加下面的反引号 ` 键盘1前面的按键 -->
+ 		insert into t_category(cid,cname,pid,`desc`)
+ 		values(#{cid},#{cname},#{parent.cid},#{desc})
+ 	</insert>
+ 	
+ 	<!-- 后台 load -->
+ 	<select id="load" parameterType="java.lang.String" resultType="com.cqupt.goods_ssm.domain.extend.TCategoryExtend">
+ 		select * from t_category 
+ 		where cid=#{cid}
+ 	</select>
+ 	
+ 	<!-- 后台 edit -->
+ 	<update id="edit" parameterType="com.cqupt.goods_ssm.domain.extend.TCategoryExtend">
+ 		 update t_category
+   		 set cname = #{cname,jdbcType=VARCHAR},
+     		 pid = #{pid,jdbcType=CHAR},
+    		 `desc` = #{desc,jdbcType=VARCHAR}
+    	where cid = #{cid,jdbcType=CHAR}
+ 	
+ 	</update>
+ 	
+ 	<!-- 后台 删除 -->
+ 	<delete id="delete" parameterType="java.lang.String">
+ 		delete from t_category where cid=#{cid}
+ 	</delete>
+ 	<select id="findChildCountByPid" parameterType="java.lang.String"
+  	resultType="java.lang.Integer">
+  		select count(*) from t_category where pid=#{pid}
+  	</select>
+ 	
+ 
+</mapper>

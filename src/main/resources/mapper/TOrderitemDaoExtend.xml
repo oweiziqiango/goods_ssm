@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqupt.goods_ssm.dao.TOrderitemDAOExtend" >
+	<resultMap type="com.cqupt.goods_ssm.domain.extend.TOrderitemExtend" id="orderitemResultMap">
+		    <id column="orderItemId" property="orderitemid" jdbcType="CHAR" />
+		    <result column="quantity" property="quantity" jdbcType="INTEGER" />
+		    <result column="subtotal" property="subtotal" jdbcType="DECIMAL" />
+		    <result column="bid" property="bid" jdbcType="CHAR" />
+		    <result column="bname" property="bname" jdbcType="VARCHAR" />
+		    <result column="currPrice" property="currprice" jdbcType="DECIMAL" />
+		    <result column="image_b" property="imageB" jdbcType="VARCHAR" />
+		    <result column="oid" property="oid" jdbcType="CHAR" />
+		    <association property="book" javaType="com.cqupt.goods_ssm.domain.extend.TBookExtend">
+		    	<id column="bid" property="bid" jdbcType="CHAR" />
+			    <result column="bname" property="bname" jdbcType="VARCHAR" />
+			    <result column="author" property="author" jdbcType="VARCHAR" />
+			    <result column="price" property="price" jdbcType="DECIMAL" />
+			    <result column="currPrice" property="currprice" jdbcType="DECIMAL" />
+			    <result column="discount" property="discount" jdbcType="DECIMAL" />
+			    <result column="press" property="press" jdbcType="VARCHAR" />
+			    <result column="publishtime" property="publishtime" jdbcType="CHAR" />
+			    <result column="edition" property="edition" jdbcType="INTEGER" />
+			    <result column="pageNum" property="pagenum" jdbcType="INTEGER" />
+			    <result column="wordNum" property="wordnum" jdbcType="INTEGER" />
+			    <result column="printtime" property="printtime" jdbcType="CHAR" />
+			    <result column="booksize" property="booksize" jdbcType="INTEGER" />
+			    <result column="paper" property="paper" jdbcType="VARCHAR" />
+			    <result column="cid" property="cid" jdbcType="CHAR" />
+			    <result column="image_w" property="imageW" jdbcType="VARCHAR" />
+			    <result column="image_b" property="imageB" jdbcType="VARCHAR" />
+			    <result column="orderBy" property="orderby" jdbcType="INTEGER" />
+		    </association>
+	</resultMap>
+	<select id="findByOidOrderItem" resultMap="orderitemResultMap">
+		select * from t_orderitem,t_book
+		where t_orderitem.oid=#{oid}
+		and t_book.bid = t_orderitem.bid
+	</select>
+	<insert id="addOrderitem" parameterType="com.cqupt.goods_ssm.domain.extend.TOrderitemExtend" >
+    insert into t_orderitem (orderItemId, quantity, subtotal, 
+      bid, bname, currPrice, 
+      image_b, oid)
+    values (#{orderitemid}, #{quantity}, #{subtotal}, 
+      #{bid}, #{bname}, #{currprice}, 
+      #{imageB}, #{oid})
+  </insert>
+  
+  	
+</mapper>
