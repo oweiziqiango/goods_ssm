@@ -3,14 +3,15 @@ package com.cqupt.goods_ssm.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cqupt.goods_ssm.dao.TBookDAO;
 import com.cqupt.goods_ssm.dao.TBookDAOExtend;
-import com.cqupt.goods_ssm.domain.TBook;
 import com.cqupt.goods_ssm.domain.extend.TBookExtend;
 import com.cqupt.goods_ssm.domain.page.PageBean;
 import com.cqupt.goods_ssm.domain.page.PageConstant;
@@ -35,6 +36,11 @@ public class BookServiceImpl implements BookService {
 	TBookDAO tBookDao;
 	
 	//根据cid 查询图书，以分页的形式返回
+	/*
+	 * @Cacheable(value="cacheTest")：
+	 * 在查询时，会先在缓存中查找数据，当缓存中数据不存在时，才会执行之后方法查找数据库
+	 */
+	@Cacheable(value="cacheTest")
 	public PageBean<TBookExtend> findByCategory(String cid, int pc)
 			throws Exception {
 
@@ -202,9 +208,11 @@ public class BookServiceImpl implements BookService {
 		
 		bookDao.delete(bid);
 	}
-
-
-	@Override
+	/*
+	 * @CacheEvict(value="cacheTest",allEntries=true)：
+	 * 在执行增删改操作时，为了保证缓存和数据库信息一致性，会将缓存信息清空。
+	 */
+	@CacheEvict(value="cacheTest")
 	public void edit(TBookExtend book) {
 		bookDao.edit(book);
 	}

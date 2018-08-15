@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.cqupt.goods_ssm.dao.TBookDAOExtend" >
-	
+	<!-- 这两个type二选一，第一个输出日志，第二个不输出日志 -->
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<!-- <cache type="org.mybatis.caches.ehcache.EhcacheCache"/> -->
 	<resultMap type="com.cqupt.goods_ssm.domain.extend.TBookExtend" id="loadResultMap">
 		<id column="bid" property="bid" jdbcType="CHAR" />
 	    <result column="bname" property="bname" jdbcType="VARCHAR" />

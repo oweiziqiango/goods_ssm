@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../config/ehcache.xsd">
+	<!-- <diskStore path="F:\develop\ehcache" /> -->
+	<!-- 缓存的默认数据 过期策略 -->
+	<defaultCache 
+		maxElementsInMemory="1000" 
+		maxElementsOnDisk="10000000"
+		eternal="false" 
+		overflowToDisk="false" 
+		timeToIdleSeconds="120"
+		timeToLiveSeconds="120" 
+		diskExpiryThreadIntervalSeconds="120"
+		memoryStoreEvictionPolicy="LRU">
+	</defaultCache>
+	<!-- 自定义缓存策略 -->
+	<cache name="cacheTest"
+		maxElementsInMemory="1000" 
+		eternal="false" 
+		overflowToDisk="false" 
+		timeToIdleSeconds="10"
+		timeToLiveSeconds="20" >	
+	</cache>
+</ehcache>
