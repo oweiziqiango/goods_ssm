@@ -60,7 +60,6 @@
     </bean>  
     <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">  
         <property name="configLocation" value="classpath:ehcache.xml"></property>  
-    	<!-- 重要配置 不然报错 -->
     	<property name="shared" value="true"></property>
     </bean> 
 </beans>
